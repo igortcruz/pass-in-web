@@ -23,17 +23,20 @@ interface Attendee {
 export function AttendeeList() {
    const [search, setSearch] = useState('')
    const [page, setPage] = useState(1)
+   const [total, setTotal] = useState(0)
    const [attendees, setAttendees] = useState<Attendee[]>([])
 
    useEffect(()=>{
-      fetch('http://localhost:3333/events/9e9bd979-9d10-4915-b339-3786b1634f33/attendees')
+      fetch(`http://localhost:3333/events/9e9bd979-9d10-4915-b339-3786b1634f33/attendees?pageIndex=${page - 1}`)
          .then(response => response.json())
          .then(data => {
             setAttendees(data.attendees)
+            setTotal(data.total)
+            console.log(data)
          })
    },[page])
 
-   const totalPages = Math.ceil(attendees.length/10)
+   const totalPages = Math.ceil(total/10)
 
    function onSearchInputChanged(event: ChangeEvent<HTMLInputElement>) {
       setSearch(event.target.value)
@@ -109,7 +112,7 @@ export function AttendeeList() {
             <tfoot>
                <tr>
                   <TableCell colSpan={3}>
-                     Mostrando 10 de {attendees.length} itens
+                     Mostrando {attendees.length} de {total} itens
                   </TableCell>
                   <TableCell className="text-right" colSpan={3}>
                      <div className="inline-flex gap-8 items-center">
